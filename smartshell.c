@@ -61,6 +61,9 @@ void execute_cmd(char * cmd)
 
 int main()
 {
+
+	// create char arr to hold user input
+	char input[100];
     /* Step 1:
      *   Add calls to execute_cmd here to test it out. 
      *   Example: execute_cmd("ps -f");
@@ -73,6 +76,28 @@ int main()
      *   Read and process commands in an infinite loop
      *   Exit when the user types "quit" 
      */
+
+     while(1)
+     {
+     prinf("myshell$ ");
+     scanf("%s", input); //reads a single word as input
+	     //check to see if the user wants to exit
+	     if (strcmp(input, "exit")==0)
+	     {
+	     	break;
+	     }
+
+	     //here i need to process the input
+
+		 // satisfying 2.4
+		 if (strcmp(input), "mem")==0)
+		 {
+		 	
+		 }
+	   
+	     	
+	 }
+	    
     
      return 0;
 }
