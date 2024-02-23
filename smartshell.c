@@ -20,17 +20,44 @@
 #define MAX_USERNAME 50
 #define MAX_PASSWORD 50
 
+//add default user and pass
+
+#define DEFAULT_USER "master_hacker"
+#define DEFAULT_PASS "i<3csc262"
+
+// "bells and whistles" added: made the prompts a different color than user input
+#define ANSI_COLOR_RED "\x1b[31m" 
+#define ANSI_COLOR_RESET "\x1b[0m"
+
+// "bells and whistles" added: created an authentication so that only someone with the right user and password can use the smartshell
 int authenticate_user()
 {
 	char username[MAX_USERNAME];
 	char password[MAX_PASSWORD];
 
-	printf("Enter username: ");
-	scanf("%s",username);
+	printf(ANSI_COLOR_RED "Enter username: " ANSI_COLOR_RESET);
+	fgets(username, sizeof(username), stdin);
+	username[strcspn(username, "\n")] = '\0';
+
+
+	printf(ANSI_COLOR_RED "Enter password: " ANSI_COLOR_RESET);
+	fgets(password, sizeof(password), stdin);
+	password[strcspn(password, "\n")] = '\0';
+
+
+	if (strcmp(username, DEFAULT_USER )== 0 && strcmp(password, DEFAULT_PASS)==0)
+	{
+		return 1; //passed
+	}
+	else
+	{
+		return 0; //failed
+	}
+
+	
 }
 
 
-/*THIS WHOLE CODE CHUNK TAKES CARE OF STEP 1*/
 void tokenize_cmd (char * cmd, int max, char * argv[])
 /* Input:  cmd is the command to be tokenized
  *         max is the maximum number of tokens allowed  
@@ -39,14 +66,10 @@ void tokenize_cmd (char * cmd, int max, char * argv[])
 {
     int num_args = 0;           /* number of arguments (tokens) in cmd */
 
-	// takes care of 1.1
     if(cmd == NULL) return;     /* nothing to do */
 
     /* Tokenize the command */
-    // this takes care of 1.2
     argv[0] = strtok(cmd, " \n");
-    // the above line stores a pointer to an array of chars which is
-    // the command to be executed
     
     while((num_args < max) && (argv[num_args] != NULL))
     {
@@ -87,39 +110,46 @@ void execute_cmd(char * cmd)
         }
 }
 
+
 int main()
 {
 
 	// create char arr to hold user input
 	char input[100];
-    /* Step 1:
-     *   Add calls to execute_cmd here to test it out. 
-     *   Example: execute_cmd("ps -f");
-     *   ... other commands you wish to try here ...
-     */
-     execute_cmd("ps -f");
+    //  execute_cmd("ps -f");
 
-    /*
-     * Step 2: 
-     *   Add code for your smart shell
-     *   Read and process commands in an infinite loop
-     *   Exit when the user types "quit" 
-     */
-
+	// logic/loop for user authentication
      while(1)
      {
-     printf("myshell$ ");
-     scanf("%s", input); //reads a single word as input
+	     if(authenticate_user())
+	     {
+	     	printf(ANSI_COLOR_RED "Login successful!\n" ANSI_COLOR_RESET);
+	     	break;
+	     }
+	     else
+	     {
+	     	printf(ANSI_COLOR_RED "Login failed. Try again.\n" ANSI_COLOR_RESET);
+	     }
+     }
+
+
+	// main loop for taking in commands and executing them
+     while(1)
+     {
+     printf(ANSI_COLOR_RED "myshell$ " ANSI_COLOR_RESET);
+
+     if(fgets(input, sizeof(input), stdin)== NULL)
+     {
+     	perror(ANSI_COLOR_RED "fgets failed" ANSI_COLOR_RESET);
+     	exit(EXIT_FAILURE);
+     }
+
+     input[strcspn(input, "\n")] = '\0';
      
-	     //check to see if the user wants to exit
-	     if (strcmp(input, "exit")==0)
+	     if (strcmp(input, "quit")==0)
 	     {
 	     	break;
 	     }
-
-	     //here i need to process the input
-
-		 // satisfying 2.4
 		 else if (strcmp(input, "mem")==0)
 		 {
 		 	execute_cmd("free -m -t");
@@ -140,3 +170,4 @@ int main()
     
      return 0;
 }
+
